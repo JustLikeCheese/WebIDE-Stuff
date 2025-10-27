@@ -1,7 +1,8 @@
 [
     {
         "date": "2025-08-20",
-        "text": "HTML原生开发才是正统, 其他框架开发都是异类",
+        "text": "经典非 HTML 其他框架都是异类论",
+        "original": "HTML原生开发才是正统, 其他框架开发都是异类",
         "image": "images/2025/8/20/1.jpeg"
     },
     {
@@ -10,6 +11,52 @@
         "image": [
             "images/2025/8/20/2.jpeg",
             "images/2025/8/20/3.jpeg"
+        ]
+    },
+    {
+        "date": "2025-08-21",
+        "text": "有 WebIDE 和 AIDE 在, 结绳翻不起什么风浪",
+        "original": "没事，有webide和aide在结扎翻不起什么风浪",
+        "image": [
+            "images/2025/8/21/1.jpeg",
+            "images/2025/8/21/2.jpeg"
+        ]
+    },
+    {
+        "text": "WebIDE 笑传之吊打 Lua 安卓和结绳圈子",
+        "original": "反正webide出来后。lua手机安卓开发圈子和结绳圈子。大不如前了。一天不如一天。",
+        "image": [
+            "images/2025/8/21/3.jpeg",
+            "images/2025/8/21/4.jpeg"
+        ]
+    },
+    {
+        "text": "笑点解析: 10多万的代码都是屎山",
+        "original": "我webide差不多有10多万得代码啦",
+        "image": [
+            "images/2025/8/21/5.jpeg"
+        ]
+    },
+    {
+        "text": "@叶落花零 你又不会玩安卓，别丢人",
+        "image": [
+            "images/2025/8/21/6.jpeg"
+        ]
+    },
+    {
+        "text": "典中典之日常攻击其他 IDE",
+        "original": "生怕别的ide比你的强[吐血]\n@狐咔军 叫你结杂这点小格局，怪不得发展不起来。\n@虎丘 人家不玩结扎神情变好了，你咋脑子还是这样啊？",
+        "image": [
+            "images/2025/8/21/7.jpeg",
+            "images/2025/8/21/8.jpeg",
+            "images/2025/8/21/9.jpeg"
+        ]
+    },
+    {
+        "text": "说话前后不搭, 不是说 HTML 原生开发才是正统吗？",
+        "original": "webide里面的Java只不过是辅助作用",
+        "image": [
+            "images/2025/8/21/10.jpeg"
         ]
     }
 ]

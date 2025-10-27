@@ -507,7 +507,7 @@
 
             let data = [];
             try {
-                const response = await fetch(JSON_PATH);
+                const response = await fetch(`${JSON_PATH}?v=${Date.now()}`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }

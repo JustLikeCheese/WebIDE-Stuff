@@ -5,11 +5,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WebIDE Stuff 涩话</title>
-    <!-- TODO 2: 添加网站图标链接 -->
     <link rel="icon" href="favicon.jpg" type="image/jpeg">
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css" rel="stylesheet">
     <style>
-        /* Reset & Base Styles */
         *,
         *::before,
         *::after {
@@ -26,7 +24,6 @@
             transition: background 0.3s, color 0.3s;
         }
 
-        /* Theme Variables */
         :root {
             --bg-color: #121212;
             --text-color: #e0e0e0;
@@ -35,6 +32,7 @@
             --border-color: rgba(255, 255, 255, 0.15);
             --blockquote-bg: rgba(255, 255, 255, 0.03);
             --ripple-color: rgba(255, 255, 255, 0.4);
+            --panel-bg: rgba(20, 20, 20, 0.9);
         }
 
         body.light {
@@ -45,9 +43,9 @@
             --border-color: rgba(0, 0, 0, 0.1);
             --blockquote-bg: #ffffff;
             --ripple-color: rgba(0, 0, 0, 0.4);
+            --panel-bg: rgba(250, 250, 250, 0.9);
         }
 
-        /* Header */
         header {
             padding: 1.5rem 5%;
             text-align: center;
@@ -69,7 +67,6 @@
             color: var(--text-color);
         }
 
-        /* Header Buttons */
         .header-buttons {
             position: absolute;
             top: 1rem;
@@ -106,7 +103,6 @@
             font-size: 1.5rem;
         }
 
-        /* Ripple Effect */
         .ripple {
             position: absolute;
             border-radius: 50%;
@@ -123,34 +119,19 @@
             }
         }
 
-        /* Main Content - Document Flow */
         main {
             padding: 3rem 5%;
             max-width: 800px;
             margin: 0 auto;
         }
 
-        /* Markdown Element Styles */
         .entry {
             margin-bottom: 2.5rem;
             animation: fadeIn 0.6s ease-out forwards;
             opacity: 0;
         }
 
-        .entry:nth-child(1) {
-            animation-delay: 0.1s;
-        }
-
-        .entry:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .entry:nth-child(3) {
-            animation-delay: 0.3s;
-        }
-
         h2.entry-title {
-            /* Markdown H2 Style */
             font-size: 2rem;
             color: var(--text-color);
             font-weight: 600;
@@ -159,20 +140,7 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        img.entry-image {
-            /* Markdown Image Style */
-            width: 100%;
-            max-height: 400px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-            cursor: pointer;
-            display: block;
-            background-color: rgba(0, 0, 0, 0.1);
-        }
-
         blockquote.entry-text {
-            /* Markdown Blockquote Style */
             margin: 0;
             padding: 1rem 1.5rem;
             font-size: 1.15rem;
@@ -182,21 +150,80 @@
             background-color: var(--blockquote-bg);
             font-style: italic;
             border-radius: 0 8px 8px 0;
+            position: relative;
         }
 
         blockquote.entry-text p {
             margin: 0;
         }
+        
+        p.entry-original {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--button-hover);
+            border: none;
+            color: var(--text-color);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        blockquote.entry-text:hover .copy-btn {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .entry-image-container {
+            margin-top: 1.5rem;
+        }
+
+        .entry-image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 1.5rem;
+        }
+
+        img.entry-image {
+            width: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            display: block;
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .entry-image-container .entry-image {
+            max-height: 400px;
+        }
+
+        .entry-image-gallery .entry-image {
+            aspect-ratio: 16 / 9;
+        }
 
         hr.entry-separator {
-            /* Markdown HR Style */
             border: 0;
             height: 1px;
             background: var(--border-color);
             margin: 4rem auto;
         }
 
-        /* Other Styles */
         .loading,
         .error {
             text-align: center;
@@ -231,6 +258,7 @@
             display: block;
             max-width: 90%;
             max-height: 90%;
+            cursor: zoom-out;
         }
 
         .modal-close {
@@ -242,6 +270,119 @@
             font-weight: bold;
             transition: 0.3s;
             cursor: pointer;
+        }
+
+        .modal-nav {
+            display: none;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.3);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            font-size: 30px;
+            transition: background-color 0.3s;
+        }
+
+        .modal.multi-image .modal-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-nav:hover {
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        .modal-prev {
+            left: 20px;
+        }
+
+        .modal-next {
+            right: 20px;
+        }
+
+        .timeline-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 320px;
+            height: 100%;
+            background-color: var(--panel-bg);
+            backdrop-filter: blur(10px);
+            z-index: 1001;
+            transform: translateX(-100%);
+            transition: transform 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .timeline-panel.show {
+            transform: translateX(0);
+        }
+        
+        .timeline-header {
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .timeline-header h2 {
+             color: var(--text-color);
+             font-size: 1.2rem;
+        }
+        
+        .timeline-close-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.8rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+        
+        .timeline-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        
+        .timeline-list li {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .timeline-list li:hover {
+            background-color: var(--button-hover);
+        }
+        
+        .timeline-list li .date {
+            font-weight: bold;
+            color: var(--accent-color);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+        
+        .timeline-list li .text-snippet {
+            font-size: 0.9rem;
+            color: var(--text-color);
+            opacity: 0.8;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
         }
 
         @keyframes fadeInModal {
@@ -263,7 +404,6 @@
             margin-top: 3rem;
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .header-buttons {
                 position: static;
@@ -307,11 +447,12 @@
 <body>
     <header>
         <h1>WebIDE-Stuff</h1>
-        <p>记录神人风向决定发型语录</p>
+        <p>记录风向决定发型神人语录</p>
         <div class="header-buttons">
+            <button id="timeline-btn" class="btn" title="时间表"><i class="mdi mdi-timeline-text-outline"></i></button>
+            <a href="https://github.com/JustLikeCheese/WebIDE-Stuff" class="btn github" target="_blank"
+                rel="noopener noreferrer" title="GitHub仓库"><i class="mdi mdi-github"></i></a>
             <button class="btn theme-toggle" title="切换主题"><i class="mdi mdi-moon-waxing-crescent"></i></button>
-            <a href="https://github.com/JustLikeCheese/WebIDE-Stuff" class="btn github" target="_blank" rel="noopener noreferrer"
-                title="GitHub仓库"><i class="mdi mdi-github"></i></a>
         </div>
     </header>
 
@@ -321,7 +462,17 @@
 
     <div id="image-modal" class="modal">
         <span class="modal-close" id="modal-close-btn">&times;</span>
+        <button class="modal-nav modal-prev" id="modal-prev-btn" title="上一张 (←)"><i class="mdi mdi-chevron-left"></i></button>
         <img class="modal-content" id="modal-image">
+        <button class="modal-nav modal-next" id="modal-next-btn" title="下一张 (→)"><i class="mdi mdi-chevron-right"></i></button>
+    </div>
+    
+    <div id="timeline-panel" class="timeline-panel">
+        <div class="timeline-header">
+            <h2>时间表</h2>
+            <button id="timeline-close-btn" class="timeline-close-btn">&times;</button>
+        </div>
+        <ul id="timeline-list" class="timeline-list"></ul>
     </div>
 
     <footer>
@@ -330,13 +481,15 @@
 
     <script>
         const JSON_PATH = 'stuff.json';
-        const FALLBACK_DATA = [
-            {
-                "date": "2025-10-27",
-                "text": "加载 stuff.json 失败！请确保文件存在，并且您正在通过本地服务器访问此页面。这是备用显示数据。",
-                "image": ""
-            }
-        ];
+        const FALLBACK_DATA = [{
+            "date": "2025-10-27",
+            "text": "加载 stuff.json 失败！请确保文件存在，并且您正在通过本地服务器访问此页面。这是备用显示数据。",
+            "image": ""
+        }];
+        
+        let currentGallery = [];
+        let currentIndex = 0;
+        let isWheeling = false;
 
         document.addEventListener('DOMContentLoaded', () => {
             loadContent();
@@ -346,7 +499,12 @@
 
         async function loadContent() {
             const gallery = document.getElementById('gallery');
-            if (!gallery) return;
+            const timelineList = document.getElementById('timeline-list');
+
+            if (!gallery || !timelineList) {
+                return;
+            }
+
             let data = [];
             try {
                 const response = await fetch(JSON_PATH);
@@ -356,26 +514,49 @@
                 data = await response.json();
             } catch (error) {
                 console.error("无法加载或解析 stuff.json:", error);
-                data = FALLBACK_DATA; // 加载失败时使用备用数据
+                data = FALLBACK_DATA;
                 gallery.innerHTML = `<div class="error">加载神谕失败，请检查文件或网络连接。</div>`;
             }
 
-            // 如果数据为空，也使用备用数据
             if (!data || data.length === 0) {
                 data = FALLBACK_DATA;
             }
 
-            gallery.innerHTML = ''; // 清空加载提示
+            gallery.innerHTML = '';
+            timelineList.innerHTML = '';
+
             data.forEach((item, index) => {
                 const entryContainer = document.createElement('div');
+                const entryId = `entry-${index}`;
                 entryContainer.className = 'entry';
-                entryContainer.id = `entry-${index}`;
+                entryContainer.id = entryId;
 
                 const titleHtml = item.date ? `<h2 class="entry-title">${new Date(item.date).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}</h2>` : '';
-                const imageHtml = item.image ? `<img src="${item.image}" alt="神人语录配图" class="entry-image" loading="lazy" />` : '';
-                const textHtml = `<blockquote class="entry-text"><p>${item.text}</p></blockquote>`;
+                
+                const originalHtml = (item.original && item.original.trim() !== item.text.trim()) ? `<p class="entry-original">${item.original}</p>` : '';
+                
+                const copyButtonHtml = `<button class="copy-btn" title="复制内容"><i class="mdi mdi-content-copy"></i></button>`;
+                
+                const textHtml = `<blockquote class="entry-text"><p>${item.text}</p>${originalHtml}${copyButtonHtml}</blockquote>`;
 
-                entryContainer.innerHTML = titleHtml + imageHtml + textHtml;
+                let imageHtml = '';
+                const images = Array.isArray(item.image) ? item.image : (item.image ? [item.image] : []);
+
+                if (images.length > 0) {
+                    if (images.length === 1) {
+                        imageHtml = `
+                            <div class="entry-image-container">
+                                <img src="${images[0]}" alt="神人语录配图" class="entry-image" loading="lazy" />
+                            </div>`;
+                    } else {
+                        const imageTags = images.map(src =>
+                            `<img src="${src}" alt="神人语录配图" class="entry-image" loading="lazy" />`
+                        ).join('');
+                        imageHtml = `<div class="entry-image-gallery">${imageTags}</div>`;
+                    }
+                }
+
+                entryContainer.innerHTML = titleHtml + textHtml + imageHtml;
                 gallery.appendChild(entryContainer);
 
                 if (index < data.length - 1) {
@@ -384,30 +565,186 @@
                     gallery.appendChild(separator);
                 }
 
-                const imageElement = entryContainer.querySelector('.entry-image');
-                if (imageElement) {
-                    imageElement.addEventListener('click', () => openModal(imageElement.src));
+                const imageElements = entryContainer.querySelectorAll('.entry-image');
+                imageElements.forEach((img, imgIndex) => {
+                    img.addEventListener('click', () => {
+                        openModal(images, imgIndex);
+                    });
+                });
+                
+                const copyBtn = entryContainer.querySelector('.copy-btn');
+                if (copyBtn) {
+                    copyBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const textToCopy = item.original || item.text;
+                        navigator.clipboard.writeText(textToCopy).then(() => {
+                            const icon = copyBtn.querySelector('.mdi');
+                            icon.className = 'mdi mdi-check';
+                            setTimeout(() => {
+                                icon.className = 'mdi mdi-content-copy';
+                            }, 2000);
+                        }).catch(err => {
+                            console.error('复制失败: ', err);
+                        });
+                    });
+                }
+
+                if (item.date) {
+                    const li = document.createElement('li');
+                    li.dataset.targetId = entryId;
+                    li.innerHTML = `
+                        <span class="date">${new Date(item.date).toLocaleDateString('zh-CN')}</span>
+                        <span class="text-snippet">${item.text}</span>
+                    `;
+                    timelineList.appendChild(li);
                 }
             });
         }
 
         function setupEventListeners() {
             const themeToggle = document.querySelector('.theme-toggle');
-            themeToggle.addEventListener('click', (e) => { createRipple(e); document.body.classList.toggle('light'); const isLight = document.body.classList.contains('light'); themeToggle.querySelector('.mdi').className = isLight ? 'mdi mdi-white-balance-sunny' : 'mdi mdi-moon-waxing-crescent'; localStorage.setItem('theme', isLight ? 'light' : 'dark'); });
             const githubBtn = document.querySelector('.btn.github');
-            githubBtn.addEventListener('click', (e) => { e.preventDefault(); createRipple(e); setTimeout(() => window.open(e.currentTarget.href, '_blank'), 400); });
-            const modal = document.getElementById('image-modal'); const closeModalBtn = document.getElementById('modal-close-btn');
-            const closeModal = () => { modal.classList.remove('show'); document.body.style.overflow = ''; };
-            closeModalBtn.onclick = closeModal; modal.onclick = (e) => { if (e.target === modal) closeModal(); };
-            document.addEventListener('keydown', (e) => { if (e.key === "Escape" && modal.classList.contains('show')) closeModal(); });
-        }
-        function openModal(src) {
+            const timelineBtn = document.getElementById('timeline-btn');
+            const timelinePanel = document.getElementById('timeline-panel');
+            const timelineCloseBtn = document.getElementById('timeline-close-btn');
+            const timelineList = document.getElementById('timeline-list');
             const modal = document.getElementById('image-modal');
             const modalImg = document.getElementById('modal-image');
-            modal.classList.add('show');
-            modalImg.src = src;
-            document.body.style.overflow = 'hidden';
+            const closeModalBtn = document.getElementById('modal-close-btn');
+            const prevBtn = document.getElementById('modal-prev-btn');
+            const nextBtn = document.getElementById('modal-next-btn');
+
+            themeToggle.addEventListener('click', (e) => {
+                createRipple(e);
+                document.body.classList.toggle('light');
+                const isLight = document.body.classList.contains('light');
+                themeToggle.querySelector('.mdi').className = isLight ? 'mdi mdi-white-balance-sunny' : 'mdi mdi-moon-waxing-crescent';
+                localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            });
+
+            githubBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                createRipple(e);
+                setTimeout(() => {
+                    window.open(e.currentTarget.href, '_blank')
+                }, 400);
+            });
+            
+            timelineBtn.addEventListener('click', (e) => {
+                createRipple(e);
+                timelinePanel.classList.add('show');
+            });
+
+            timelineCloseBtn.addEventListener('click', () => {
+                timelinePanel.classList.remove('show');
+            });
+
+            timelineList.addEventListener('click', (e) => {
+                const targetLi = e.target.closest('li');
+                if (targetLi) {
+                    const targetId = targetLi.dataset.targetId;
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                    }
+                    timelinePanel.classList.remove('show');
+                }
+            });
+
+            const closeModal = () => {
+                modal.classList.remove('show');
+                document.body.style.overflow = '';
+            };
+
+            closeModalBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal || e.target === modalImg) {
+                    closeModal();
+                }
+            });
+            
+            prevBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (currentIndex > 0) {
+                    showImage(currentIndex - 1);
+                }
+            });
+
+            nextBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (currentIndex < currentGallery.length - 1) {
+                    showImage(currentIndex + 1);
+                }
+            });
+
+            modal.addEventListener('wheel', (e) => {
+                if (currentGallery.length <= 1 || isWheeling) {
+                    return;
+                }
+                e.preventDefault();
+                isWheeling = true;
+                
+                if (e.deltaY < 0 && currentIndex > 0) {
+                    showImage(currentIndex - 1);
+                } else if (e.deltaY > 0 && currentIndex < currentGallery.length - 1) {
+                    showImage(currentIndex + 1);
+                }
+                
+                setTimeout(() => {
+                    isWheeling = false;
+                }, 200);
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (timelinePanel.classList.contains('show') && e.key === "Escape") {
+                    timelinePanel.classList.remove('show');
+                }
+                
+                if (!modal.classList.contains('show')) {
+                    return;
+                }
+
+                if (e.key === "Escape") {
+                    closeModal();
+                } else if (e.key === "ArrowLeft") {
+                    if (currentIndex > 0) {
+                        showImage(currentIndex - 1);
+                    }
+                } else if (e.key === "ArrowRight") {
+                    if (currentIndex < currentGallery.length - 1) {
+                        showImage(currentIndex + 1);
+                    }
+                }
+            });
         }
+        
+        function showImage(index) {
+            const modalImg = document.getElementById('modal-image');
+            const prevBtn = document.getElementById('modal-prev-btn');
+            const nextBtn = document.getElementById('modal-next-btn');
+            
+            currentIndex = index;
+            modalImg.src = currentGallery[currentIndex];
+            
+            prevBtn.style.display = currentIndex > 0 ? 'flex' : 'none';
+            nextBtn.style.display = currentIndex < currentGallery.length - 1 ? 'flex' : 'none';
+        }
+
+        function openModal(gallery, index) {
+            const modal = document.getElementById('image-modal');
+            currentGallery = gallery;
+            
+            if (currentGallery.length > 1) {
+                modal.classList.add('multi-image');
+            } else {
+                modal.classList.remove('multi-image');
+            }
+            
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+            showImage(index);
+        }
+
         function loadTheme() {
             const savedTheme = localStorage.getItem('theme');
             const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
@@ -416,6 +753,7 @@
                 document.querySelector('.theme-toggle .mdi').className = 'mdi mdi-white-balance-sunny';
             }
         }
+
         function createRipple(event) {
             const button = event.currentTarget;
             const ripple = document.createElement("span");
@@ -426,9 +764,13 @@
             ripple.style.top = `${event.clientY - rect.top - size / 2}px`;
             ripple.classList.add("ripple");
             const oldRipple = button.querySelector(".ripple");
-            if (oldRipple) oldRipple.remove();
+            if (oldRipple) {
+                oldRipple.remove();
+            }
             button.appendChild(ripple);
-            setTimeout(() => ripple.remove(), 600);
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
         }
     </script>
 </body>

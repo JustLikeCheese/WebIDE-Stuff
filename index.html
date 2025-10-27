@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebIDE Stuff 涩话</title>
+    <!-- TODO 2: 添加网站图标链接 -->
+    <link rel="icon" href="favicon.jpg" type="image/jpeg">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css" rel="stylesheet">
+    <style>
+        /* Reset & Base Styles */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color, #ffffff);
+            background: var(--bg-color, #121212);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* Theme Variables */
+        :root {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --accent-color: #e74c3c;
+            --button-hover: rgba(255, 255, 255, 0.15);
+            --border-color: rgba(255, 255, 255, 0.15);
+            --blockquote-bg: rgba(255, 255, 255, 0.03);
+            --ripple-color: rgba(255, 255, 255, 0.4);
+        }
+
+        body.light {
+            --bg-color: #f7f7f7;
+            --text-color: #333333;
+            --accent-color: #d35400;
+            --button-hover: rgba(0, 0, 0, 0.1);
+            --border-color: rgba(0, 0, 0, 0.1);
+            --blockquote-bg: #ffffff;
+            --ripple-color: rgba(0, 0, 0, 0.4);
+        }
+
+        /* Header */
+        header {
+            padding: 1.5rem 5%;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+            width: 100%;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--accent-color);
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            color: var(--text-color);
+        }
+
+        /* Header Buttons */
+        .header-buttons {
+            position: absolute;
+            top: 1rem;
+            right: 5%;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            background-color: transparent;
+            color: var(--text-color);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border: none;
+            outline: none;
+            text-decoration: none;
+        }
+
+        .btn:hover,
+        .btn:focus {
+            background-color: var(--button-hover);
+            outline: none;
+        }
+
+        .btn .mdi {
+            font-size: 1.5rem;
+        }
+
+        /* Ripple Effect */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--ripple-color);
+            transform: scale(0);
+            animation: ripple-animation 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Main Content - Document Flow */
+        main {
+            padding: 3rem 5%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Markdown Element Styles */
+        .entry {
+            margin-bottom: 2.5rem;
+            animation: fadeIn 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        .entry:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .entry:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .entry:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        h2.entry-title {
+            /* Markdown H2 Style */
+            font-size: 2rem;
+            color: var(--text-color);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        img.entry-image {
+            /* Markdown Image Style */
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+            display: block;
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        blockquote.entry-text {
+            /* Markdown Blockquote Style */
+            margin: 0;
+            padding: 1rem 1.5rem;
+            font-size: 1.15rem;
+            line-height: 1.8;
+            color: var(--text-color);
+            border-left: 5px solid var(--accent-color);
+            background-color: var(--blockquote-bg);
+            font-style: italic;
+            border-radius: 0 8px 8px 0;
+        }
+
+        blockquote.entry-text p {
+            margin: 0;
+        }
+
+        hr.entry-separator {
+            /* Markdown HR Style */
+            border: 0;
+            height: 1px;
+            background: var(--border-color);
+            margin: 4rem auto;
+        }
+
+        /* Other Styles */
+        .loading,
+        .error {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.2rem;
+        }
+
+        .error {
+            color: #e74c3c;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            justify-content: center;
+            align-items: center;
+            animation: fadeInModal 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        @keyframes fadeInModal {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            border-top: 1px solid var(--border-color);
+            margin-top: 3rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-buttons {
+                position: static;
+                margin-top: 1rem;
+                justify-content: center;
+                width: 100%;
+            }
+
+            header h1 {
+                font-size: 2rem;
+            }
+
+            main {
+                padding: 2rem 3%;
+            }
+
+            h2.entry-title {
+                font-size: 1.6rem;
+            }
+
+            blockquote.entry-text {
+                font-size: 1rem;
+                padding: 0.75rem 1.25rem;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>WebIDE-Stuff</h1>
+        <p>记录神人风向决定发型语录</p>
+        <div class="header-buttons">
+            <button class="btn theme-toggle" title="切换主题"><i class="mdi mdi-moon-waxing-crescent"></i></button>
+            <a href="https://github.com/JustLikeCheese/WebIDE-Stuff" class="btn github" target="_blank" rel="noopener noreferrer"
+                title="GitHub仓库"><i class="mdi mdi-github"></i></a>
+        </div>
+    </header>
+
+    <main id="gallery">
+        <div class="loading">正在加载神谕...</div>
+    </main>
+
+    <div id="image-modal" class="modal">
+        <span class="modal-close" id="modal-close-btn">&times;</span>
+        <img class="modal-content" id="modal-image">
+    </div>
+
+    <footer>
+        &copy; 2025 WebIDE-Stuff.
+    </footer>
+
+    <script>
+        const JSON_PATH = 'stuff.json';
+        const FALLBACK_DATA = [
+            {
+                "date": "2025-10-27",
+                "text": "加载 stuff.json 失败！请确保文件存在，并且您正在通过本地服务器访问此页面。这是备用显示数据。",
+                "image": ""
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadContent();
+            setupEventListeners();
+            loadTheme();
+        });
+
+        async function loadContent() {
+            const gallery = document.getElementById('gallery');
+            if (!gallery) return;
+            let data = [];
+            try {
+                const response = await fetch(JSON_PATH);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                data = await response.json();
+            } catch (error) {
+                console.error("无法加载或解析 stuff.json:", error);
+                data = FALLBACK_DATA; // 加载失败时使用备用数据
+                gallery.innerHTML = `<div class="error">加载神谕失败，请检查文件或网络连接。</div>`;
+            }
+
+            // 如果数据为空，也使用备用数据
+            if (!data || data.length === 0) {
+                data = FALLBACK_DATA;
+            }
+
+            gallery.innerHTML = ''; // 清空加载提示
+            data.forEach((item, index) => {
+                const entryContainer = document.createElement('div');
+                entryContainer.className = 'entry';
+                entryContainer.id = `entry-${index}`;
+
+                const titleHtml = item.date ? `<h2 class="entry-title">${new Date(item.date).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}</h2>` : '';
+                const imageHtml = item.image ? `<img src="${item.image}" alt="神人语录配图" class="entry-image" loading="lazy" />` : '';
+                const textHtml = `<blockquote class="entry-text"><p>${item.text}</p></blockquote>`;
+
+                entryContainer.innerHTML = titleHtml + imageHtml + textHtml;
+                gallery.appendChild(entryContainer);
+
+                if (index < data.length - 1) {
+                    const separator = document.createElement('hr');
+                    separator.className = 'entry-separator';
+                    gallery.appendChild(separator);
+                }
+
+                const imageElement = entryContainer.querySelector('.entry-image');
+                if (imageElement) {
+                    imageElement.addEventListener('click', () => openModal(imageElement.src));
+                }
+            });
+        }
+
+        function setupEventListeners() {
+            const themeToggle = document.querySelector('.theme-toggle');
+            themeToggle.addEventListener('click', (e) => { createRipple(e); document.body.classList.toggle('light'); const isLight = document.body.classList.contains('light'); themeToggle.querySelector('.mdi').className = isLight ? 'mdi mdi-white-balance-sunny' : 'mdi mdi-moon-waxing-crescent'; localStorage.setItem('theme', isLight ? 'light' : 'dark'); });
+            const githubBtn = document.querySelector('.btn.github');
+            githubBtn.addEventListener('click', (e) => { e.preventDefault(); createRipple(e); setTimeout(() => window.open(e.currentTarget.href, '_blank'), 400); });
+            const modal = document.getElementById('image-modal'); const closeModalBtn = document.getElementById('modal-close-btn');
+            const closeModal = () => { modal.classList.remove('show'); document.body.style.overflow = ''; };
+            closeModalBtn.onclick = closeModal; modal.onclick = (e) => { if (e.target === modal) closeModal(); };
+            document.addEventListener('keydown', (e) => { if (e.key === "Escape" && modal.classList.contains('show')) closeModal(); });
+        }
+        function openModal(src) {
+            const modal = document.getElementById('image-modal');
+            const modalImg = document.getElementById('modal-image');
+            modal.classList.add('show');
+            modalImg.src = src;
+            document.body.style.overflow = 'hidden';
+        }
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+            if (savedTheme === 'light' || (!savedTheme && prefersLight)) {
+                document.body.classList.add('light');
+                document.querySelector('.theme-toggle .mdi').className = 'mdi mdi-white-balance-sunny';
+            }
+        }
+        function createRipple(event) {
+            const button = event.currentTarget;
+            const ripple = document.createElement("span");
+            const rect = button.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = `${size}px`;
+            ripple.style.left = `${event.clientX - rect.left - size / 2}px`;
+            ripple.style.top = `${event.clientY - rect.top - size / 2}px`;
+            ripple.classList.add("ripple");
+            const oldRipple = button.querySelector(".ripple");
+            if (oldRipple) oldRipple.remove();
+            button.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        }
+    </script>
+</body>
+
+</html>

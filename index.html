@@ -48,29 +48,87 @@
 
         header {
             padding: 1.5rem 5%;
-            text-align: center;
             border-bottom: 1px solid var(--border-color);
-            position: relative;
+            background-color: var(--bg-color);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            z-index: 999;
+            transition: padding 0.4s ease;
+        }
+
+        header.header-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            border-color: var(--border-color);
+            background-color: var(--panel-bg);
+            backdrop-filter: blur(10px);
+        }
+        
+        header.header-hidden {
+            transform: translateY(-100%);
+        }
+        
+        .header-title-wrapper {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
             width: 100%;
+            height: 58px; 
+            text-align: center;
+            transition: height 0.4s ease;
+        }
+
+        header h1, header p {
+            position: absolute;
+            left: 0;
+            right: 0;
+            margin: 0 auto;
         }
 
         header h1 {
             font-size: 2.5rem;
-            margin-bottom: 0.5rem;
             color: var(--accent-color);
             font-weight: 700;
+            top: 0;
+            transform: translateY(0);
+            opacity: 1;
         }
 
         header p {
             font-size: 1.1rem;
             opacity: 0.8;
             color: var(--text-color);
+            top: 52px;
+            transform: translateY(0);
+            /* transition: transform 0.4s ease, top 0.4s ease, opacity 0.4s ease; */ /* <-- 修改点：移除了此行 */
+        }
+        
+        header.header-compact {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        header.header-compact .header-title-wrapper {
+            height: 24px;
+        }
+
+        header.header-compact h1 {
+            transform: translateY(-150%);
+            opacity: 0;
+            transition: transform 0.4s ease, opacity 0.2s ease;
+        }
+
+        header.header-compact p {
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: 500;
+            opacity: 1;
         }
 
         .header-buttons {
-            position: absolute;
-            top: 1rem;
-            right: 5%;
             display: flex;
             gap: 1rem;
         }
@@ -158,7 +216,7 @@
         blockquote.entry-text p {
             margin: 0;
         }
-        
+
         p.entry-original {
             margin-top: 1rem;
             padding-top: 1rem;
@@ -185,7 +243,7 @@
             justify-content: center;
             cursor: pointer;
         }
-        
+
         blockquote.entry-text:hover .copy-btn {
             opacity: 1;
             pointer-events: auto;
@@ -248,7 +306,6 @@
             background-color: rgba(0, 0, 0, 0.85);
             justify-content: center;
             align-items: center;
-            animation: fadeInModal 0.3s ease;
         }
 
         .modal.show {
@@ -327,7 +384,7 @@
         .timeline-panel.show {
             transform: translateX(0);
         }
-        
+
         .timeline-header {
             padding: 1rem 1.5rem;
             display: flex;
@@ -335,12 +392,12 @@
             align-items: center;
             border-bottom: 1px solid var(--border-color);
         }
-        
+
         .timeline-header h2 {
-             color: var(--text-color);
-             font-size: 1.2rem;
+            color: var(--text-color);
+            font-size: 1.2rem;
         }
-        
+
         .timeline-close-btn {
             background: none;
             border: none;
@@ -349,7 +406,7 @@
             cursor: pointer;
             padding: 0.5rem;
         }
-        
+
         .timeline-list {
             list-style: none;
             padding: 0;
@@ -357,25 +414,25 @@
             overflow-y: auto;
             flex-grow: 1;
         }
-        
+
         .timeline-list li {
             padding: 1rem 1.5rem;
             border-bottom: 1px solid var(--border-color);
             cursor: pointer;
             transition: background-color 0.3s;
         }
-        
+
         .timeline-list li:hover {
             background-color: var(--button-hover);
         }
-        
+
         .timeline-list li .date {
             font-weight: bold;
             color: var(--accent-color);
             display: block;
             margin-bottom: 0.25rem;
         }
-        
+
         .timeline-list li .text-snippet {
             font-size: 0.9rem;
             color: var(--text-color);
@@ -387,16 +444,6 @@
             -webkit-box-orient: vertical;
         }
 
-        @keyframes fadeInModal {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
         footer {
             text-align: center;
             padding: 2rem;
@@ -404,32 +451,6 @@
             opacity: 0.7;
             border-top: 1px solid var(--border-color);
             margin-top: 3rem;
-        }
-
-        @media (max-width: 768px) {
-            .header-buttons {
-                position: static;
-                margin-top: 1rem;
-                justify-content: center;
-                width: 100%;
-            }
-
-            header h1 {
-                font-size: 2rem;
-            }
-
-            main {
-                padding: 2rem 3%;
-            }
-
-            h2.day-title {
-                font-size: 1.6rem;
-            }
-
-            blockquote.entry-text {
-                font-size: 1rem;
-                padding: 0.75rem 1.25rem;
-            }
         }
 
         @keyframes fadeIn {
@@ -443,15 +464,60 @@
                 transform: translateY(0);
             }
         }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                justify-content: center;
+            }
+            .header-title-wrapper {
+                position: static;
+                transform: none;
+                width: auto;
+            }
+            header.header-fixed {
+                flex-direction: row;
+                justify-content: flex-end;
+            }
+            header.header-fixed .header-title-wrapper {
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 100%;
+            }
+            .header-buttons {
+                position: static;
+                margin-top: 1rem;
+                justify-content: center;
+            }
+            header.header-fixed .header-buttons {
+                margin-top: 0;
+            }
+            header h1 {
+                font-size: 2rem;
+            }
+            main {
+                padding: 2rem 3%;
+            }
+            h2.day-title {
+                font-size: 1.6rem;
+            }
+            blockquote.entry-text {
+                font-size: 1rem;
+                padding: 0.75rem 1.25rem;
+            }
+        }
     </style>
 </head>
 
 <body>
     <header>
-        <h1>WebIDE-Stuff</h1>
-        <p>记录风向决定发型神人语录</p>
+        <div class="header-title-wrapper">
+            <h1>WebIDE-Stuff</h1>
+            <p>记录风向决定发型神人语录</p>
+        </div>
         <div class="header-buttons">
-            <button id="timeline-btn" class="btn" title="时间表"><i class="mdi mdi-timeline-text-outline"></i></button>
+            <button id="timeline-btn" class="btn" title="时间线"><i class="mdi mdi-timeline-text-outline"></i></button>
             <button class="btn theme-toggle" title="切换主题"><i class="mdi mdi-moon-waxing-crescent"></i></button>
             <a href="https://github.com/JustLikeCheese/WebIDE-Stuff" class="btn github" target="_blank"
                 rel="noopener noreferrer" title="GitHub仓库"><i class="mdi mdi-github"></i></a>
@@ -464,14 +530,16 @@
 
     <div id="image-modal" class="modal">
         <span class="modal-close" id="modal-close-btn">&times;</span>
-        <button class="modal-nav modal-prev" id="modal-prev-btn" title="上一张 (←)"><i class="mdi mdi-chevron-left"></i></button>
+        <button class="modal-nav modal-prev" id="modal-prev-btn" title="上一张 (←)"><i
+                class="mdi mdi-chevron-left"></i></button>
         <img class="modal-content" id="modal-image">
-        <button class="modal-nav modal-next" id="modal-next-btn" title="下一张 (→)"><i class="mdi mdi-chevron-right"></i></button>
+        <button class="modal-nav modal-next" id="modal-next-btn" title="下一张 (→)"><i
+                class="mdi mdi-chevron-right"></i></button>
     </div>
-    
+
     <div id="timeline-panel" class="timeline-panel">
         <div class="timeline-header">
-            <h2>时间表</h2>
+            <h2>时间线</h2>
             <button id="timeline-close-btn" class="timeline-close-btn">&times;</button>
         </div>
         <ul id="timeline-list" class="timeline-list"></ul>
@@ -490,7 +558,7 @@
                 "image": ""
             }]
         }];
-        
+
         let currentGallery = [];
         let currentIndex = 0;
         let isWheeling = false;
@@ -499,6 +567,7 @@
             loadContent();
             setupEventListeners();
             loadTheme();
+            setupScrollBehavior();
         });
 
         async function loadContent() {
@@ -534,7 +603,7 @@
                 const dayId = `day-${dayIndex}`;
                 daySection.className = 'day-section';
                 daySection.id = dayId;
-                daySection.style.animationDelay = `${dayIndex * 0.1}s`;
+                daySection.style.animationDelay = `${dayIndex * 0.15}s`;
 
                 const titleHtml = day.date ? `<h2 class="day-title">${new Date(day.date).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}</h2>` : '';
                 daySection.innerHTML = titleHtml;
@@ -586,7 +655,7 @@
                         });
                     }
                 });
-                
+
                 gallery.appendChild(daySection);
 
                 if (dayIndex < data.length - 1) {
@@ -623,13 +692,15 @@
                 createRipple(e);
                 document.body.classList.toggle('light');
                 const isLight = document.body.classList.contains('light');
-                themeToggle.querySelector('.mdi').className = isLight ? 'mdi mdi-white-balance-sunny' : 'mdi mdi-moon-waxing-crescent';
+                document.querySelectorAll('.theme-toggle .mdi').forEach(icon => {
+                    icon.className = isLight ? 'mdi mdi-white-balance-sunny' : 'mdi mdi-moon-waxing-crescent';
+                });
                 localStorage.setItem('theme', isLight ? 'light' : 'dark');
             });
-            
+
             timelineBtn.addEventListener('click', (e) => {
                 createRipple(e);
-                timelinePanel.classList.add('show');
+                timelinePanel.classList.toggle('show');
             });
 
             timelineCloseBtn.addEventListener('click', () => {
@@ -642,7 +713,9 @@
                     const targetId = targetLi.dataset.targetId;
                     const targetElement = document.getElementById(targetId);
                     if (targetElement) {
-                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth'
+                        });
                     }
                     timelinePanel.classList.remove('show');
                 }
@@ -659,7 +732,7 @@
                     closeModal();
                 }
             });
-            
+
             prevBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 if (currentIndex > 0) {
@@ -680,13 +753,13 @@
                 }
                 e.preventDefault();
                 isWheeling = true;
-                
+
                 if (e.deltaY < 0 && currentIndex > 0) {
                     showImage(currentIndex - 1);
                 } else if (e.deltaY > 0 && currentIndex < currentGallery.length - 1) {
                     showImage(currentIndex + 1);
                 }
-                
+
                 setTimeout(() => {
                     isWheeling = false;
                 }, 200);
@@ -696,7 +769,7 @@
                 if (timelinePanel.classList.contains('show') && e.key === "Escape") {
                     timelinePanel.classList.remove('show');
                 }
-                
+
                 if (!modal.classList.contains('show')) {
                     return;
                 }
@@ -714,15 +787,60 @@
                 }
             });
         }
-        
+
+        function setupScrollBehavior() {
+            const header = document.querySelector('header');
+            if (!header) return;
+
+            let lastScrollTop = 0;
+            const headerHeight = header.offsetHeight;
+            
+            window.addEventListener('scroll', () => {
+                const scrollTop = window.scrollY;
+
+                if (scrollTop > headerHeight) {
+                    if (!header.classList.contains('header-fixed')) {
+                        header.classList.add('header-fixed');
+                        document.body.style.paddingTop = `${headerHeight}px`;
+                    }
+                    
+                    header.classList.add('header-compact');
+
+                    if (scrollTop > lastScrollTop) {
+                        if (!header.classList.contains('header-hidden')) {
+                            header.style.transition = 'none';
+                            header.offsetHeight; 
+                            header.classList.add('header-hidden');
+                        }
+                    } else {
+                        header.style.transition = 'transform 0.4s ease';
+                        header.classList.remove('header-hidden');
+                    }
+
+                } else {
+                    header.style.transition = '';
+                    header.classList.remove('header-compact');
+                    
+                    if (scrollTop <= 5) {
+                        if (header.classList.contains('header-fixed')) {
+                            header.classList.remove('header-fixed');
+                            document.body.style.paddingTop = '0';
+                        }
+                    }
+                }
+                
+                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+            }, { passive: true });
+        }
+
         function showImage(index) {
             const modalImg = document.getElementById('modal-image');
             const prevBtn = document.getElementById('modal-prev-btn');
             const nextBtn = document.getElementById('modal-next-btn');
-            
+
             currentIndex = index;
             modalImg.src = currentGallery[currentIndex];
-            
+
             prevBtn.style.display = currentIndex > 0 ? 'flex' : 'none';
             nextBtn.style.display = currentIndex < currentGallery.length - 1 ? 'flex' : 'none';
         }
@@ -730,13 +848,13 @@
         function openModal(gallery, index) {
             const modal = document.getElementById('image-modal');
             currentGallery = gallery;
-            
+
             if (currentGallery.length > 1) {
                 modal.classList.add('multi-image');
             } else {
                 modal.classList.remove('multi-image');
             }
-            
+
             modal.classList.add('show');
             document.body.style.overflow = 'hidden';
             showImage(index);
@@ -747,7 +865,9 @@
             const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
             if (savedTheme === 'light' || (!savedTheme && prefersLight)) {
                 document.body.classList.add('light');
-                document.querySelector('.theme-toggle .mdi').className = 'mdi mdi-white-balance-sunny';
+                document.querySelectorAll('.theme-toggle .mdi').forEach(icon => {
+                    icon.className = 'mdi mdi-white-balance-sunny';
+                });
             }
         }
 

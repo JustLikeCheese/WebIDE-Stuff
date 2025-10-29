@@ -103,7 +103,6 @@
             color: var(--text-color);
             top: 52px;
             transform: translateY(0);
-            /* transition: transform 0.4s ease, top 0.4s ease, opacity 0.4s ease; */ /* <-- 修改点：移除了此行 */
         }
         
         header.header-compact {
@@ -268,6 +267,38 @@
             display: block;
             background-color: rgba(0, 0, 0, 0.1);
         }
+        
+        .entry-video-container {
+            margin-top: 1.5rem;
+            position: relative;
+            cursor: pointer;
+        }
+
+        video.entry-video {
+            width: 100%;
+            border-radius: 8px;
+            display: block;
+            background-color: rgba(0, 0, 0, 0.1);
+            max-height: 400px;
+        }
+
+        .entry-video-container::after {
+            content: '\F040A';
+            font-family: 'Material Design Icons';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 5rem;
+            color: rgba(255, 255, 255, 0.8);
+            pointer-events: none;
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        .entry-video-container:hover::after {
+            transform: translate(-50%, -50%) scale(1.1);
+            color: #fff;
+        }
 
         .entry-image-container .entry-image {
             max-height: 400px;
@@ -318,6 +349,10 @@
             max-width: 90%;
             max-height: 90%;
             cursor: zoom-out;
+        }
+        
+        #modal-video {
+            display: none;
         }
 
         .modal-close {
@@ -533,6 +568,7 @@
         <button class="modal-nav modal-prev" id="modal-prev-btn" title="上一张 (←)"><i
                 class="mdi mdi-chevron-left"></i></button>
         <img class="modal-content" id="modal-image">
+        <video class="modal-content" id="modal-video" controls autoplay playsinline></video>
         <button class="modal-nav modal-next" id="modal-next-btn" title="下一张 (→)"><i
                 class="mdi mdi-chevron-right"></i></button>
     </div>
@@ -616,28 +652,45 @@
                     const copyButtonHtml = `<button class="copy-btn" title="复制内容"><i class="mdi mdi-content-copy"></i></button>`;
                     const textHtml = `<blockquote class="entry-text"><p>${item.text}</p>${originalHtml}${copyButtonHtml}</blockquote>`;
 
-                    let imageHtml = '';
+                    let mediaHtml = '';
+                    let mediaGallery = [];
                     const images = Array.isArray(item.image) ? item.image : (item.image ? [item.image] : []);
+                    const videoSrc = item.video;
 
                     if (images.length > 0) {
+                        mediaGallery = images.map(src => ({ type: 'image', src }));
                         if (images.length === 1) {
-                            imageHtml = `<div class="entry-image-container"><img src="${images[0]}" alt="神人语录配图" class="entry-image" loading="lazy" /></div>`;
+                            mediaHtml = `<div class="entry-image-container"><img src="${images[0]}" alt="神人语录配图" class="entry-image" loading="lazy" /></div>`;
                         } else {
                             const imageTags = images.map(src => `<img src="${src}" alt="神人语录配图" class="entry-image" loading="lazy" />`).join('');
-                            imageHtml = `<div class="entry-image-gallery">${imageTags}</div>`;
+                            mediaHtml = `<div class="entry-image-gallery">${imageTags}</div>`;
                         }
+                    } else if (videoSrc) {
+                        mediaGallery = [{ type: 'video', src: videoSrc }];
+                        mediaHtml = `<div class="entry-video-container">
+                                        <video src="${videoSrc}#t=0.1" class="entry-video" preload="metadata" muted playsinline></video>
+                                     </div>`;
                     }
 
-                    entryContainer.innerHTML = textHtml + imageHtml;
+                    entryContainer.innerHTML = textHtml + mediaHtml;
                     daySection.appendChild(entryContainer);
 
                     const imageElements = entryContainer.querySelectorAll('.entry-image');
-                    imageElements.forEach((img) => {
-                        img.addEventListener('click', () => {
-                            openModal(images, Array.from(imageElements).indexOf(img));
+                    if (imageElements.length > 0) {
+                        imageElements.forEach((img, index) => {
+                            img.addEventListener('click', () => {
+                                openModal(mediaGallery, index);
+                            });
                         });
-                    });
+                    }
 
+                    const videoContainer = entryContainer.querySelector('.entry-video-container');
+                    if (videoContainer) {
+                        videoContainer.addEventListener('click', () => {
+                            openModal(mediaGallery, 0);
+                        });
+                    }
+                    
                     const copyBtn = entryContainer.querySelector('.copy-btn');
                     if (copyBtn) {
                         copyBtn.addEventListener('click', (e) => {
@@ -684,6 +737,7 @@
             const timelineList = document.getElementById('timeline-list');
             const modal = document.getElementById('image-modal');
             const modalImg = document.getElementById('modal-image');
+            const modalVideo = document.getElementById('modal-video');
             const closeModalBtn = document.getElementById('modal-close-btn');
             const prevBtn = document.getElementById('modal-prev-btn');
             const nextBtn = document.getElementById('modal-next-btn');
@@ -724,11 +778,13 @@
             const closeModal = () => {
                 modal.classList.remove('show');
                 document.body.style.overflow = '';
+                modalVideo.pause();
+                modalVideo.src = "";
             };
 
             closeModalBtn.addEventListener('click', closeModal);
             modal.addEventListener('click', (e) => {
-                if (e.target === modal || e.target === modalImg) {
+                if (e.target === modal || e.target === modalImg || e.target === modalVideo) {
                     closeModal();
                 }
             });
@@ -736,14 +792,14 @@
             prevBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 if (currentIndex > 0) {
-                    showImage(currentIndex - 1);
+                    showMedia(currentIndex - 1);
                 }
             });
 
             nextBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 if (currentIndex < currentGallery.length - 1) {
-                    showImage(currentIndex + 1);
+                    showMedia(currentIndex + 1);
                 }
             });
 
@@ -755,9 +811,9 @@
                 isWheeling = true;
 
                 if (e.deltaY < 0 && currentIndex > 0) {
-                    showImage(currentIndex - 1);
+                    showMedia(currentIndex - 1);
                 } else if (e.deltaY > 0 && currentIndex < currentGallery.length - 1) {
-                    showImage(currentIndex + 1);
+                    showMedia(currentIndex + 1);
                 }
 
                 setTimeout(() => {
@@ -778,11 +834,11 @@
                     closeModal();
                 } else if (e.key === "ArrowLeft") {
                     if (currentIndex > 0) {
-                        showImage(currentIndex - 1);
+                        showMedia(currentIndex - 1);
                     }
                 } else if (e.key === "ArrowRight") {
                     if (currentIndex < currentGallery.length - 1) {
-                        showImage(currentIndex + 1);
+                        showMedia(currentIndex + 1);
                     }
                 }
             });
@@ -833,13 +889,27 @@
             }, { passive: true });
         }
 
-        function showImage(index) {
+        function showMedia(index) {
             const modalImg = document.getElementById('modal-image');
+            const modalVideo = document.getElementById('modal-video');
             const prevBtn = document.getElementById('modal-prev-btn');
             const nextBtn = document.getElementById('modal-next-btn');
 
             currentIndex = index;
-            modalImg.src = currentGallery[currentIndex];
+            const currentItem = currentGallery[currentIndex];
+
+            modalImg.style.display = 'none';
+            modalVideo.style.display = 'none';
+            modalVideo.pause();
+
+            if (currentItem.type === 'image') {
+                modalImg.src = currentItem.src;
+                modalImg.style.display = 'block';
+            } else if (currentItem.type === 'video') {
+                modalVideo.src = currentItem.src;
+                modalVideo.style.display = 'block';
+                modalVideo.play().catch(e => console.error("Video autoplay failed:", e));
+            }
 
             prevBtn.style.display = currentIndex > 0 ? 'flex' : 'none';
             nextBtn.style.display = currentIndex < currentGallery.length - 1 ? 'flex' : 'none';
@@ -857,7 +927,7 @@
 
             modal.classList.add('show');
             document.body.style.overflow = 'hidden';
-            showImage(index);
+            showMedia(index);
         }
 
         function loadTheme() {

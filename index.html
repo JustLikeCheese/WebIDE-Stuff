@@ -64,6 +64,7 @@
             right: 0;
             border-color: var(--border-color);
             background-color: var(--panel-bg);
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
         }
         
@@ -408,6 +409,7 @@
             width: 320px;
             height: 100%;
             background-color: var(--panel-bg);
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
             z-index: 1001;
             transform: translateX(-100%);
@@ -477,6 +479,7 @@
             text-overflow: ellipsis;
             display: -webkit-box;
             -webkit-line-clamp: 2;
+            line-clamp: 2;
             -webkit-box-orient: vertical;
         }
 
